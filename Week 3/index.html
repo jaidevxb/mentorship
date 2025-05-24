@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Newton-Raphson Solver</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background: #6aa092;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .container {
+        background: #fff;
+        padding: 25px 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 340px;
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: #2e8b57;
+      }
+
+      input,
+      button {
+        width: 90%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      input {
+        border: 1px solid #ccc;
+      }
+
+      button {
+        background: #44bd32;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #4cd137;
+      }
+
+      .output {
+        margin-top: 16px;
+        font-size: 15px;
+        color: #00695c;
+        text-align: left;
+      }
+
+      table {
+        width: 100%;
+        margin-top: 10px;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        border: 1px solid #ccc;
+        padding: 6px;
+      }
+
+      th {
+        background: #f0f0f0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Newton-Raphson Solver</h2>
+
+      <input type="text" id="functionInput" placeholder="Enter f(x), e.g. 3*x - Math.cos(x) - 1" />
+      <input type="text" id="derivativeInput" placeholder="Enter f'(x), e.g. 3 + Math.sin(x)" />
+      <input type="number" id="initialGuess" placeholder="Initial Guess (x₀)" />
+      <input type="number" id="decimalPlaces" placeholder="Decimal Places (e.g. 5)" />
+
+      <button onclick="solve()">Find Root</button>
+
+      <div id="result" class="output"></div>
+    </div>
+
+    <script>
+      function solve() {
+        const fStr = document.getElementById("functionInput").value;
+        const dfStr = document.getElementById("derivativeInput").value;
+        let x0 = parseFloat(document.getElementById("initialGuess").value);
+        const decimals = parseInt(document.getElementById("decimalPlaces").value);
+
+        function f(x) {
+          return eval(fStr);
+        }
+
+        function df(x) {
+          return eval(dfStr);
+        }
+
+        let max_iter = 100;
+        let tol = Math.pow(10, -decimals);
+        let x1;
+        let output = "<table><tr><th>Iteration</th><th>x value</th></tr>";
+
+        for (let i = 0; i < max_iter; i++) {
+          let fx0 = f(x0);
+          let dfx0 = df(x0);
+
+          if (dfx0 === 0) {
+            document.getElementById("result").innerHTML = "Zero derivative. Stopping.";
+            return;
+          }
+
+          x1 = x0 - fx0 / dfx0;
+
+          output += `<tr><td>${i + 1}</td><td>${x1.toFixed(decimals)}</td></tr>`;
+
+          if (Math.abs(x1 - x0) < tol) {
+            output += "</table>";
+            output += `<p>Converged! Root ≈ <b>${x1.toFixed(decimals)}</b></p>`;
+            document.getElementById("result").innerHTML = output;
+            return;
+          }
+
+          x0 = x1;
+        }
+
+        output += "</table><p>Did not converge within 100 iterations.</p>";
+        document.getElementById("result").innerHTML = output;
+      }
+    </script>
+  </body>
+</html>
